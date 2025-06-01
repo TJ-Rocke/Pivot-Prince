@@ -1,0 +1,52 @@
+.pnovTable {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.pnovTable th,
+.pnovTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.pnovTable th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: 600;
+}
+
+.pnovTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.pnovTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.totalCount {
+  font-weight: 600;
+  margin-top: 1rem;
+  color: #2563eb;
+}
+
+.copyPasteSection {
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background-color: #f3f4f6;
+  border-radius: 0.375rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+} 

@@ -1,0 +1,17 @@
+1.Total PNOV by DSP (sort data Z => A)
+Rows : DSP Name
+Values : Tracking ID
+
+2. DAs with Over 1 MM still missing (DAs that have more than 1)
+Rows : DA Name
+Values : Tracking ID
+
+3. High Value MM still missing DAs
+Rows : DA Name
+Values : Tracking ID, Cost
+Filters : Cost (get all that are >= 50)
+
+For Scan Audits DA names must be present
+For Perfect Mile change DA names into Route codes
+Send Current PNOV total (in mercury) to RTS Area Manager
+Make Copy Paste blocks for each section to post to Perfect Mile
