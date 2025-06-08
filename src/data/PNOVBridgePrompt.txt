@@ -2,7 +2,7 @@
 Rows : DSP Name
 Values : Tracking ID
 
-2. DAs with Over 1 MM still missing (DAs that have more than 1)
+2. DAs with Over 1 MM still missing (sort data Z => A, select DAs that have more than 1)
 Rows : DA Name
 Values : Tracking ID
 

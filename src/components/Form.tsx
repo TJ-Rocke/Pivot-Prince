@@ -29,40 +29,57 @@ export default function Form() {
   // handle form submission
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    event.currentTarget.reset();
-
     try {
       // output to be displayed
       if (fileName && templateName) {
-        if (templateName === "PNOV Bridge") {
-          // Show the PNOV Bridge component
-          setShowPnovBridge(true);
-        } else {
-          // Default dummy output for other templates
-          setShowPnovBridge(false);
-          const dummyTable = `
-  | Route ID | Packages | Late Deliveries |
-  |----------|----------|-----------------|
-  | RTE001   |   148    |       2         |
-  | RTE002   |   121    |       0         |
-  | RTE003   |   134    |       4         |
-  `;
-
-          const dummyMessage = `Team,
-    
-  Please find the ${templateName} report generated from ${fileName}. Summary is below:
-  
-  - Total routes: 3
-  - Total packages: 403
-  - Late deliveries: 6
-  
-  Let me know if there are any questions.
-  
-  Thanks,  
-  [Your Name]`;
-
-          setGeneratedOutput(`${dummyTable}\n\n${dummyMessage}`);
+        const formData = new FormData();
+        const fileInput = document.getElementById(
+          "dataFile"
+        ) as HTMLInputElement;
+        if (fileInput.files && fileInput.files[0]) {
+          formData.append("file", fileInput.files[0]);
         }
+        formData.append("templateName", templateName || "");
+        const response = await fetch("http://127.0.0.1:5000/pnov-bridge", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to generate report");
+        }
+        const data = await response.json();
+
+        setGeneratedOutput(data.report);
+        //       if (templateName === "PNOV Bridge") {
+        //         // Show the PNOV Bridge component
+        //         setShowPnovBridge(true);
+        //       } else {
+        //         // Default dummy output for other templates
+        //         setShowPnovBridge(false);
+        //         const dummyTable = `
+        // | Route ID | Packages | Late Deliveries |
+        // |----------|----------|-----------------|
+        // | RTE001   |   148    |       2         |
+        // | RTE002   |   121    |       0         |
+        // | RTE003   |   134    |       4         |
+        // `;
+
+        //         const dummyMessage = `Team,
+
+        // Please find the ${templateName} report generated from ${fileName}. Summary is below:
+
+        // - Total routes: 3
+        // - Total packages: 403
+        // - Late deliveries: 6
+
+        // Let me know if there are any questions.
+
+        // Thanks,
+        // [Your Name]`;
+
+        // setGeneratedOutput(`${dummyTable}\n\n${dummyMessage}`);
+        // }
       }
     } catch (error) {
       console.error("Error generating output:", error);
@@ -157,7 +174,17 @@ export default function Form() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(generatedOutput ?? "");
+                  const fullReport = `
+DMD6 Parcel NOV DPMO Bridge Root Cause Category: OTR/DSP/ DA
+Behavior Root Cause: Other - Packages missing still missing at EOS MM returned by same DA
+
+${generatedOutput ?? ""}
+
+Actions:
+DAs with high value missing still missing packages requested for scan audits. PNOV Update sent during shift for Dispatchers to contact DAs and sweep van for packages marked missing before returning to station
+    `;
+
+                  navigator.clipboard.writeText(fullReport.trim());
                   setCopySuccess(true);
                   setTimeout(() => setCopySuccess(false), 2000);
                 }}
@@ -191,7 +218,25 @@ export default function Form() {
             {showPnovBridge ? (
               <PnovBridgeOutput onLoad={handlePnovOutputLoaded} />
             ) : (
-              <pre className="font-mono text-sm mt-2">{generatedOutput}</pre>
+              <div>
+                <p className="text-sm font-semibold">
+                  DMD6 Parcel NOV DPMO Bridge Root Cause Category: OTR/DSP/ DA
+                </p>
+                <p className="text-sm font-semibold">
+                  Behavior Root Cause: Other- Packages missing still missing at
+                  EOS MM returned by same DA
+                </p>
+                <br />
+                <pre className="font-mono text-sm mt-2">{generatedOutput}</pre>
+                <br />
+                <p className="text-md font-semibold">Actions: </p>
+                <p>
+                  DAs with high value missing still missing packages requested
+                  for scan audits PNOV Update sent during shift for Dispatchers
+                  to contact DAs and sweep van for packages marked missing
+                  before returning to station
+                </p>
+              </div>
             )}
           </div>
         </div>
