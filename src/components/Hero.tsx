@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import pixelLogo from "../assets/pixel-logo.svg";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -23,11 +24,7 @@ export default function Hero() {
           <div className="flex lg:flex-1 sm:flex-1 md:flex-1">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">pivotPrince</span>
-              <img
-                alt=""
-                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                className="h-8 w-auto"
-              />
+              <img alt="Pivot Prince" src={pixelLogo} className="h-30 w-auto" />
             </a>
           </div>
           <div className="flex lg:hidden">
@@ -68,9 +65,9 @@ export default function Hero() {
               <a href="#" className="-m-1.5 p-1.5">
                 <span className="sr-only">pivotPrince</span>
                 <img
-                  alt=""
-                  src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                  className="h-8 w-auto"
+                  alt="Pivot Prince"
+                  src={pixelLogo}
+                  className="h-16 w-auto"
                 />
               </a>
               <button
@@ -130,7 +127,7 @@ export default function Hero() {
               </h1>
               <p className="mt-8 text-pretty text-lg font-medium text-gray-400 sm:text-xl/8">
                 Instantly turn your spreadsheets into pivot tables and targeted
-                messages. Don’t analyze, don’t format, don’t draft. Just upload
+                messages. Don't analyze, don't format, don't draft. Just upload
                 and send.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
