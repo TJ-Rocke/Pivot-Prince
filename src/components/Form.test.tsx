@@ -124,7 +124,8 @@ describe("Form Component", () => {
     expect(global.fetch).toHaveBeenCalled();
 
     // Check that FormData includes all required fields
-    const fetchCall = (global.fetch as unknown as vi.Mock).mock.calls[0];
+    const fetchCall = (global.fetch as unknown as ReturnType<typeof vi.fn>).mock
+      .calls[0];
     const fetchBody = fetchCall[1].body;
 
     expect(fetchBody.has("file")).toBeTruthy();
