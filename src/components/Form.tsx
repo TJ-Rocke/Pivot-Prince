@@ -4,33 +4,44 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import SelectInput from "./SelectInput";
 import PnovBridgeOutput from "./PnovBridgeOutput";
 
+// Form component types
+type FormData = {
+  fileName: string | null;
+  templateName: string | null;
+  username: string;
+  date: string;
+};
+
 export default function Form() {
-  // access input file name
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [templateName, setTemplateName] = useState<string | null>(null);
+  // Form state
+  const [formData, setFormData] = useState<FormData>({
+    fileName: null,
+    templateName: null,
+    username: "",
+    date: "",
+  });
   const [generatedOutput, setGeneratedOutput] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [showPnovBridge, setShowPnovBridge] = useState(false);
-  const [username, setUsername] = useState<string>("");
-  const [date, setDate] = useState<string>("");
+  const [showPnovBridge] = useState(false);
 
-  // handler functions
-  // handle setting file name
+  // Update form field handlers
   function handleSetFileName(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
-      setFileName(file.name);
+      setFormData((prev) => ({ ...prev, fileName: file.name }));
     }
   }
 
-  // handle username change
   function handleUsernameChange(event: ChangeEvent<HTMLInputElement>) {
-    setUsername(event.target.value);
+    setFormData((prev) => ({ ...prev, username: event.target.value }));
   }
 
-  // handle date change
   function handleDateChange(event: ChangeEvent<HTMLInputElement>) {
-    setDate(event.target.value);
+    setFormData((prev) => ({ ...prev, date: event.target.value }));
+  }
+
+  function handleTemplateChange(templateName: string) {
+    setFormData((prev) => ({ ...prev, templateName }));
   }
 
   // handle PNOV output being loaded
@@ -38,25 +49,50 @@ export default function Form() {
     setGeneratedOutput(output);
   }
 
+  // Format date for display (mm/dd/yyyy)
+  function formatDate(dateString: string): string {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    return `${month}/${day}/${year}`;
+  }
+
+  // Copy report to clipboard
+  function copyToClipboard() {
+    const fullReport = `
+DMD6 Parcel NOV DPMO Bridge Root Cause Category: OTR/DSP/ DA
+Behavior Root Cause: Other - Packages missing still missing at EOS MM returned by same DA
+
+${generatedOutput ?? ""}
+
+Actions:
+DAs with high value missing still missing packages requested for scan audits. PNOV Update sent during shift for Dispatchers to contact DAs and sweep van for packages marked missing before returning to station
+Owner: ${formData.username}, ECD: ${formatDate(formData.date)}
+    `;
+
+    navigator.clipboard.writeText(fullReport.trim());
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  }
+
   // handle form submission
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
       // output to be displayed
-      if (fileName && templateName) {
-        const formData = new FormData();
+      if (formData.fileName && formData.templateName) {
+        const formDataToSubmit = new FormData();
         const fileInput = document.getElementById(
           "dataFile"
         ) as HTMLInputElement;
         if (fileInput.files && fileInput.files[0]) {
-          formData.append("file", fileInput.files[0]);
+          formDataToSubmit.append("file", fileInput.files[0]);
         }
-        formData.append("templateName", templateName || "");
-        formData.append("username", username);
-        formData.append("date", date);
+        formDataToSubmit.append("templateName", formData.templateName || "");
+        formDataToSubmit.append("username", formData.username);
+        formDataToSubmit.append("date", formData.date);
         const response = await fetch("http://127.0.0.1:5000/pnov-bridge", {
           method: "POST",
-          body: formData,
+          body: formDataToSubmit,
         });
 
         if (!response.ok) {
@@ -71,9 +107,160 @@ export default function Form() {
       setGeneratedOutput("Error generating output. Please try again.");
     } finally {
       // reset values
-      setFileName(null);
-      setTemplateName(null); // this triggers reset
+      setFormData((prev) => ({ ...prev, fileName: null, templateName: null }));
     }
+  }
+
+  // Render input field section
+  function renderInputFields() {
+    return (
+      <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <label
+            htmlFor="company"
+            className="block text-md font-semibold text-gray-100"
+          >
+            Excel file
+          </label>
+          <div className="mt-2.5">
+            <div className="relative flex items-center w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900">
+              <label
+                htmlFor="dataFile"
+                className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-800"
+              >
+                Choose File
+              </label>
+              <span className="mx-2 text-gray-300">|</span>
+              <span className="truncate">
+                {formData.fileName || "No file chosen"}
+              </span>
+              <input
+                id="dataFile"
+                name="dataFile"
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                onChange={handleSetFileName}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="sm:col-span-2">
+          <div>
+            <SelectInput
+              selected={formData.templateName}
+              onSelect={handleTemplateChange}
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="username"
+            className="block text-md font-semibold text-gray-100"
+          >
+            Username
+          </label>
+          <div className="mt-2.5">
+            <input
+              type="text"
+              name="username"
+              id="username"
+              value={formData.username}
+              onChange={handleUsernameChange}
+              className="w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900"
+              placeholder="Enter your username"
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="date"
+            className="block text-md font-semibold text-gray-100"
+          >
+            ECD Date
+          </label>
+          <div className="mt-2.5">
+            <input
+              type="date"
+              name="date"
+              id="date"
+              value={formData.date}
+              onChange={handleDateChange}
+              className="w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render output section
+  function renderOutputSection() {
+    if (!generatedOutput && !showPnovBridge) return null;
+
+    return (
+      <div className="mt-10 relative rounded-md bg-white text-gray-900 shadow-md">
+        <div className="flex justify-between items-center px-4 pt-4">
+          <h3 className="text-xl font-semibold">Generated Report</h3>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={copyToClipboard}
+              title="Copy to clipboard"
+              className="text-gray-500 hover:text-gray-800 transition cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-2 10h2a2 2 0 002-2v-8a2 2 0 00-2-2h-2m-8 8h8"
+                />
+              </svg>
+            </button>
+            {copySuccess && (
+              <span className="text-green-600 text-sm font-medium">
+                Copied!
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="px-4 pb-4 whitespace-pre-line overflow-auto max-h-[70vh]">
+          {showPnovBridge ? (
+            <PnovBridgeOutput onLoad={handlePnovOutputLoaded} />
+          ) : (
+            <div>
+              <p className="text-sm font-semibold">
+                DMD6 Parcel NOV DPMO Bridge Root Cause Category: OTR/DSP/ DA
+              </p>
+              <p className="text-sm font-semibold">
+                Behavior Root Cause: Other- Packages missing still missing at
+                EOS MM returned by same DA
+              </p>
+              <br />
+              <pre className="font-mono text-sm mt-2">{generatedOutput}</pre>
+              <br />
+              <p className="text-md font-semibold">Actions: </p>
+              <p>
+                DAs with high value missing still missing packages requested for
+                scan audits PNOV Update sent during shift for Dispatchers to
+                contact DAs and sweep van for packages marked missing before
+                returning to station
+              </p>
+              <p>
+                Owner: {formData.username}, ECD: {formatDate(formData.date)}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -106,78 +293,7 @@ export default function Form() {
         className="mx-auto mt-8 max-w-xl sm:mt-10"
         id="form"
       >
-        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label
-              htmlFor="company"
-              className="block text-md font-semibold text-gray-100"
-            >
-              Excel file
-            </label>
-            <div className="mt-2.5">
-              <div className="relative flex items-center w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900">
-                <label
-                  htmlFor="dataFile"
-                  className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-800"
-                >
-                  Choose File
-                </label>
-                <span className="mx-2 text-gray-300">|</span>
-                <span className="truncate">{fileName || "No file chosen"}</span>
-                <input
-                  id="dataFile"
-                  name="dataFile"
-                  type="file"
-                  accept=".xlsx,.xls,.csv"
-                  onChange={handleSetFileName}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="sm:col-span-2">
-            <div>
-              <SelectInput selected={templateName} onSelect={setTemplateName} />
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-md font-semibold text-gray-100"
-            >
-              Username
-            </label>
-            <div className="mt-2.5">
-              <input
-                type="text"
-                name="username"
-                id="username"
-                value={username}
-                onChange={handleUsernameChange}
-                className="w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900"
-                placeholder="Enter your username"
-              />
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="date"
-              className="block text-md font-semibold text-gray-100"
-            >
-              ECD Date
-            </label>
-            <div className="mt-2.5">
-              <input
-                type="date"
-                name="date"
-                id="date"
-                value={date}
-                onChange={handleDateChange}
-                className="w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900"
-              />
-            </div>
-          </div>
-        </div>
+        {renderInputFields()}
         <div className="mt-10">
           <button
             type="submit"
@@ -189,97 +305,7 @@ export default function Form() {
       </form>
 
       {/* Display output */}
-      {(generatedOutput || showPnovBridge) && (
-        <div className="mt-10 relative rounded-md bg-white text-gray-900 shadow-md">
-          <div className="flex justify-between items-center px-4 pt-4">
-            <h3 className="text-xl font-semibold">Generated Report</h3>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  const fullReport = `
-DMD6 Parcel NOV DPMO Bridge Root Cause Category: OTR/DSP/ DA
-Behavior Root Cause: Other - Packages missing still missing at EOS MM returned by same DA
-
-${generatedOutput ?? ""}
-
-Actions:
-DAs with high value missing still missing packages requested for scan audits. PNOV Update sent during shift for Dispatchers to contact DAs and sweep van for packages marked missing before returning to station
-Owner: ${username}, ECD: ${
-                    date
-                      ? (() => {
-                          const [year, month, day] = date.split("-");
-                          return `${month}/${day}/${year}`;
-                        })()
-                      : ""
-                  }
-    `;
-
-                  navigator.clipboard.writeText(fullReport.trim());
-                  setCopySuccess(true);
-                  setTimeout(() => setCopySuccess(false), 2000);
-                }}
-                title="Copy to clipboard"
-                className="text-gray-500 hover:text-gray-800 transition cursor-pointer"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-2 10h2a2 2 0 002-2v-8a2 2 0 00-2-2h-2m-8 8h8"
-                  />
-                </svg>
-              </button>
-              {copySuccess && (
-                <span className="text-green-600 text-sm font-medium">
-                  Copied!
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="px-4 pb-4 whitespace-pre-line overflow-auto max-h-[70vh]">
-            {showPnovBridge ? (
-              <PnovBridgeOutput onLoad={handlePnovOutputLoaded} />
-            ) : (
-              <div>
-                <p className="text-sm font-semibold">
-                  DMD6 Parcel NOV DPMO Bridge Root Cause Category: OTR/DSP/ DA
-                </p>
-                <p className="text-sm font-semibold">
-                  Behavior Root Cause: Other- Packages missing still missing at
-                  EOS MM returned by same DA
-                </p>
-                <br />
-                <pre className="font-mono text-sm mt-2">{generatedOutput}</pre>
-                <br />
-                <p className="text-md font-semibold">Actions: </p>
-                <p>
-                  DAs with high value missing still missing packages requested
-                  for scan audits PNOV Update sent during shift for Dispatchers
-                  to contact DAs and sweep van for packages marked missing
-                  before returning to station
-                </p>
-                <p>
-                  Owner: {username}, ECD:{" "}
-                  {date
-                    ? (() => {
-                        const [year, month, day] = date.split("-");
-                        return `${month}/${day}/${year}`;
-                      })()
-                    : ""}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {renderOutputSection()}
     </div>
   );
 }
