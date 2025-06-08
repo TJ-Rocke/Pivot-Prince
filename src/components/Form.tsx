@@ -11,6 +11,8 @@ export default function Form() {
   const [generatedOutput, setGeneratedOutput] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [showPnovBridge, setShowPnovBridge] = useState(false);
+  const [username, setUsername] = useState<string>("");
+  const [date, setDate] = useState<string>("");
 
   // handler functions
   // handle setting file name
@@ -19,6 +21,16 @@ export default function Form() {
     if (file) {
       setFileName(file.name);
     }
+  }
+
+  // handle username change
+  function handleUsernameChange(event: ChangeEvent<HTMLInputElement>) {
+    setUsername(event.target.value);
+  }
+
+  // handle date change
+  function handleDateChange(event: ChangeEvent<HTMLInputElement>) {
+    setDate(event.target.value);
   }
 
   // handle PNOV output being loaded
@@ -40,6 +52,8 @@ export default function Form() {
           formData.append("file", fileInput.files[0]);
         }
         formData.append("templateName", templateName || "");
+        formData.append("username", username);
+        formData.append("date", date);
         const response = await fetch("http://127.0.0.1:5000/pnov-bridge", {
           method: "POST",
           body: formData,
@@ -51,35 +65,6 @@ export default function Form() {
         const data = await response.json();
 
         setGeneratedOutput(data.report);
-        //       if (templateName === "PNOV Bridge") {
-        //         // Show the PNOV Bridge component
-        //         setShowPnovBridge(true);
-        //       } else {
-        //         // Default dummy output for other templates
-        //         setShowPnovBridge(false);
-        //         const dummyTable = `
-        // | Route ID | Packages | Late Deliveries |
-        // |----------|----------|-----------------|
-        // | RTE001   |   148    |       2         |
-        // | RTE002   |   121    |       0         |
-        // | RTE003   |   134    |       4         |
-        // `;
-
-        //         const dummyMessage = `Team,
-
-        // Please find the ${templateName} report generated from ${fileName}. Summary is below:
-
-        // - Total routes: 3
-        // - Total packages: 403
-        // - Late deliveries: 6
-
-        // Let me know if there are any questions.
-
-        // Thanks,
-        // [Your Name]`;
-
-        // setGeneratedOutput(`${dummyTable}\n\n${dummyMessage}`);
-        // }
       }
     } catch (error) {
       console.error("Error generating output:", error);
@@ -155,6 +140,43 @@ export default function Form() {
               <SelectInput selected={templateName} onSelect={setTemplateName} />
             </div>
           </div>
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-md font-semibold text-gray-100"
+            >
+              Username
+            </label>
+            <div className="mt-2.5">
+              <input
+                type="text"
+                name="username"
+                id="username"
+                value={username}
+                onChange={handleUsernameChange}
+                className="w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900"
+                placeholder="Enter your username"
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="date"
+              className="block text-md font-semibold text-gray-100"
+            >
+              ECD Date
+            </label>
+            <div className="mt-2.5">
+              <input
+                type="date"
+                name="date"
+                id="date"
+                value={date}
+                onChange={handleDateChange}
+                className="w-full rounded-md bg-white border border-gray-300 px-3.5 py-2 text-base text-gray-900"
+              />
+            </div>
+          </div>
         </div>
         <div className="mt-10">
           <button
@@ -182,6 +204,14 @@ ${generatedOutput ?? ""}
 
 Actions:
 DAs with high value missing still missing packages requested for scan audits. PNOV Update sent during shift for Dispatchers to contact DAs and sweep van for packages marked missing before returning to station
+Owner: ${username}, ECD: ${
+                    date
+                      ? (() => {
+                          const [year, month, day] = date.split("-");
+                          return `${month}/${day}/${year}`;
+                        })()
+                      : ""
+                  }
     `;
 
                   navigator.clipboard.writeText(fullReport.trim());
@@ -235,6 +265,15 @@ DAs with high value missing still missing packages requested for scan audits. PN
                   for scan audits PNOV Update sent during shift for Dispatchers
                   to contact DAs and sweep van for packages marked missing
                   before returning to station
+                </p>
+                <p>
+                  Owner: {username}, ECD:{" "}
+                  {date
+                    ? (() => {
+                        const [year, month, day] = date.split("-");
+                        return `${month}/${day}/${year}`;
+                      })()
+                    : ""}
                 </p>
               </div>
             )}
