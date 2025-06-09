@@ -1,54 +1,148 @@
-# React + TypeScript + Vite
+# Pivot Prince
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Pivot Prince is a web application for generating formatted bridge reports from PNOV (Parcel Notice of Violation) data. It allows users to upload CSV files, select templates, and generate ready-to-use reports for various purposes.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project consists of two main parts:
 
-## Expanding the ESLint configuration
+- **Frontend**: React application built with TypeScript and Vite
+- **Backend**: Python Flask API for data processing
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Prerequisites
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- Node.js (v18 or later)
+- npm or yarn
+- Python (v3.9 or later)
+- pip (Python package manager)
+
+## Getting Started
+
+### Frontend Setup
+
+1. Clone the repository and navigate to the frontend directory:
+
+   ```bash
+   cd pivot-prince
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   # or
+   yarn
+   ```
+
+3. Start the development server:
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+4. The application will be available at [http://localhost:5173](http://localhost:5173)
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+
+   ```bash
+   cd ../backend
+   ```
+
+2. Create and activate a virtual environment:
+
+   ```bash
+   # Windows
+   python -m venv .venv
+   .venv\Scripts\activate
+
+   # macOS/Linux
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Start the Flask server:
+
+   ```bash
+   python app.py
+   ```
+
+5. The API will be running at [http://localhost:5000](http://localhost:5000)
+
+## Using the Application
+
+1. Open the frontend application in your browser
+2. Upload a PNOV CSV file (example file format can be found in the backend directory)
+3. Select a template type (currently "PNOV Bridge" is supported)
+4. Enter your username and ECD date
+5. Click "Generate" to create the report
+6. Use the "Copy" button to copy the formatted report
+7. Use the "Refresh" button to reset the form and generate a new report
+
+## Building for Production
+
+### Frontend
+
+```bash
+npm run build
+# or
+yarn build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The build output will be in the `dist` directory, which can be deployed to any static hosting service.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Backend
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+The backend includes a Dockerfile for containerization:
+
+```bash
+# From the backend directory
+docker build -t pivot-prince-backend .
+docker run -p 5000:5000 pivot-prince-backend
 ```
+
+## Testing
+
+Run frontend tests:
+
+```bash
+npm test
+# or
+yarn test
+```
+
+Run backend tests:
+
+```bash
+# From the backend directory with virtual environment activated
+pytest
+```
+
+## Technologies Used
+
+### Frontend
+
+- React 19
+- TypeScript
+- Vite
+- TailwindCSS
+- Headless UI
+
+### Backend
+
+- Python
+- Flask
+- Pandas for data processing
+
+## License
+
+[Your license information here]
