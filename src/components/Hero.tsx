@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import pixelLogo from "../assets/pixel-logo.svg";
+import pixelLogo from "../assets/pixel-whole1-logo.svg";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -120,15 +120,24 @@ export default function Hero() {
           />
         </div>
         <div className="py-24 sm:py-32 lg:pb-40">
+          <div className="hidden sm:mb-8 sm:flex sm:justify-center">
+            <div className="relative rounded-full px-3 py-1 text-lg/6 text-indigo-300 ring-1 ring-indigo-100/10 hover:ring-indigo-100/20">
+              PNOV bridges now supported!{" "}
+              <a href="#form" className="font-semibold text-indigo-400">
+                <span aria-hidden="true" className="absolute inset-0" />
+                Try it out below <span aria-hidden="true">&darr;</span>
+              </a>
+            </div>
+          </div>
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="text-balance text-5xl font-semibold tracking-tight text-white sm:text-7xl">
-                Pivot Tables & Messaging, in One Click
+                Bridge Reports in Seconds.
               </h1>
               <p className="mt-8 text-pretty text-lg font-medium text-gray-400 sm:text-xl/8">
-                Instantly turn your spreadsheets into pivot tables and targeted
-                messages. Don't analyze, don't format, don't draft. Just upload
-                and send.
+                Skip formatting spreadsheets. Upload your data and get
+                bridge-ready report instantly — no edits, no drafts. Just copy
+                and paste.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <a

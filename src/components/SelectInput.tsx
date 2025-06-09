@@ -13,10 +13,7 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 
 const templates = [
   { id: 0, name: "Click to select" },
-  { id: 1, name: "PPS" },
-  { id: 2, name: "Not Dispatched" },
-  { id: 3, name: "FDPS" },
-  { id: 4, name: "PNOV Bridge" },
+  { id: 1, name: "PNOV Bridge" },
 ];
 
 // Prop Types
