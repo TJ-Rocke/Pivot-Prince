@@ -136,7 +136,7 @@ export default function Hero() {
               </h1>
               <p className="mt-8 text-pretty text-lg font-medium text-gray-400 sm:text-xl/8">
                 Skip formatting spreadsheets. Upload your data and get
-                bridge-ready report instantly — no edits, no drafts. Just copy
+                bridge-ready reports instantly — no edits, no drafts. Just copy
                 and paste.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">

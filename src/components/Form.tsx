@@ -285,7 +285,7 @@ Owner: ${formData.username}, ECD: ${formatDate(formData.date)}
           Try it out!
         </h2>
         <p className="mt-2 text-lg/8 text-gray-300">
-          Upload an excel file, select the metric being evaluated, and click
+          Upload a PNOV csv file, select the metric being evaluated, and click
           generate!
         </p>
       </div>
