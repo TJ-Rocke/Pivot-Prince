@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import pixelLogo from "../assets/pixel-whole1-logo.svg";
+import pivotPrinceLogo from "../assets/pivot-prince-whole-logo.svg";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -24,7 +24,11 @@ export default function Hero() {
           <div className="flex lg:flex-1 sm:flex-1 md:flex-1">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">pivotPrince</span>
-              <img alt="Pivot Prince" src={pixelLogo} className="h-30 w-auto" />
+              <img
+                alt="Pivot Prince"
+                src={pivotPrinceLogo}
+                className="h-30 w-auto"
+              />
             </a>
           </div>
           <div className="flex lg:hidden">
@@ -66,7 +70,7 @@ export default function Hero() {
                 <span className="sr-only">pivotPrince</span>
                 <img
                   alt="Pivot Prince"
-                  src={pixelLogo}
+                  src={pivotPrinceLogo}
                   className="h-16 w-auto"
                 />
               </a>
