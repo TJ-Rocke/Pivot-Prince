@@ -206,22 +206,25 @@ Owner: ${formData.username}, ECD: ${formatDate(formData.date)}
             <button
               onClick={copyToClipboard}
               title="Copy to clipboard"
-              className="text-gray-500 hover:text-gray-800 transition cursor-pointer"
+              className="text-gray-500 hover:text-gray-800 transition cursor-pointer flex items-center gap-1"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-2 10h2a2 2 0 002-2v-8a2 2 0 00-2-2h-2m-8 8h8"
-                />
-              </svg>
+              {!copySuccess && <span>click to copy</span>}
+              <span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-2 10h2a2 2 0 002-2v-8a2 2 0 00-2-2h-2m-8 8h8"
+                  />
+                </svg>
+              </span>
             </button>
             {copySuccess && (
               <span className="text-green-600 text-sm font-medium">
