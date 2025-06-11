@@ -108,10 +108,18 @@ Owner: ${formData.username}, ECD: ${formatDate(formData.date)}
         formDataToSubmit.append("templateName", formData.templateName || "");
         formDataToSubmit.append("username", formData.username);
         formDataToSubmit.append("date", formData.date);
-        const response = await fetch("http://127.0.0.1:5000/pnov-bridge", {
-          method: "POST",
-          body: formDataToSubmit,
-        });
+        // local testing
+        // const response = await fetch("http://127.0.0.1:5000/pnov-bridge", {
+        //   method: "POST",
+        //   body: formDataToSubmit,
+        // });
+        const response = await fetch(
+          "https://pivot-prince-backend.fly.dev/pnov-bridge",
+          {
+            method: "POST",
+            body: formDataToSubmit,
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to generate report");
