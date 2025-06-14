@@ -146,3 +146,47 @@ pytest
 ## License
 
 [Your license information here]
+
+## Environment Setup
+
+### API Configuration
+
+The application uses environment variables to determine which API endpoint to use. This allows you to easily switch between local development and production environments without changing code.
+
+#### Setting up environment variables:
+
+1. Create a `.env.local` file in the root of the `pivot-prince` directory for local development:
+
+```
+# Local development
+VITE_API_URL=http://127.0.0.1:5000
+```
+
+2. For production, the default URL is used (`https://pivot-prince-backend.fly.dev`), but you can override it by setting the environment variable.
+
+3. The application will use the environment variable if set, otherwise it will default to the production URL.
+
+#### How it works:
+
+In `src/components/Form.tsx`, the API URL is determined by:
+
+```typescript
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://pivot-prince-backend.fly.dev";
+const PNOV_BRIDGE_ENDPOINT = `${API_URL}/pnov-bridge`;
+```
+
+This allows you to:
+
+- Use the local server during development by setting `VITE_API_URL=http://127.0.0.1:5000`
+- Use the production server by either not setting the variable or setting it to the production URL
+
+> **Note**: Vite only exposes environment variables that are prefixed with `VITE_` to your client-side code for security reasons.
+
+## Development
+
+To run the application locally:
+
+1. Set up your environment variables as described above
+2. Install dependencies: `npm install`
+3. Start the development server: `npm run dev`

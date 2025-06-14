@@ -4,6 +4,12 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import SelectInput from "./SelectInput";
 import PnovBridgeOutput from "./PnovBridgeOutput";
 
+// API endpoints - Vite uses import.meta.env for environment variables
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://pivot-prince-backend.fly.dev";
+const PNOV_BRIDGE_ENDPOINT = `${API_URL}/pnov-bridge`;
+console.log(PNOV_BRIDGE_ENDPOINT);
+
 // Form component types
 type FormData = {
   fileName: string | null;
@@ -108,18 +114,11 @@ Owner: ${formData.username}, ECD: ${formatDate(formData.date)}
         formDataToSubmit.append("templateName", formData.templateName || "");
         formDataToSubmit.append("username", formData.username);
         formDataToSubmit.append("date", formData.date);
-        // local testing
-        // const response = await fetch("http://127.0.0.1:5000/pnov-bridge", {
-        //   method: "POST",
-        //   body: formDataToSubmit,
-        // });
-        const response = await fetch(
-          "https://pivot-prince-backend.fly.dev/pnov-bridge",
-          {
-            method: "POST",
-            body: formDataToSubmit,
-          }
-        );
+
+        const response = await fetch(PNOV_BRIDGE_ENDPOINT, {
+          method: "POST",
+          body: formDataToSubmit,
+        });
 
         if (!response.ok) {
           throw new Error("Failed to generate report");
